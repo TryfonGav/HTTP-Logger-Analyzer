@@ -3,5 +3,6 @@ add_executable(httplog main.cpp)
 target_link_libraries(httplog PRIVATE httplogger::core)
 httplogger_set_warnings(httplog)
 httplogger_enable_sanitizers(httplog)
+httplogger_enable_coverage(httplog)
 
 # Phase 2: find_package(CLI11 CONFIG REQUIRED) and link CLI11::CLI11
