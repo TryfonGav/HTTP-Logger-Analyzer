@@ -18,6 +18,7 @@ add_executable(httplogger_unit_tests
 )
 target_link_libraries(httplogger_unit_tests PRIVATE httplogger::core GTest::gtest_main)
 httplogger_enable_sanitizers(httplogger_unit_tests)
+httplogger_enable_coverage(httplogger_unit_tests)
 # gtest_add_tests finds the tests by reading the TEST(...) lines in the source files.
 # We do not use gtest_discover_tests: it runs the test program and asks GoogleTest to write a
 # JSON list into the build folder, and GoogleTest cannot open files whose path contains

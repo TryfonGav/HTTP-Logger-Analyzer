@@ -1,0 +1,119 @@
+#!/bin/sh
+# Git pre-commit hook: checks the C++ files you are about to commit with clang-format and
+# clang-tidy, and stops the commit if either finds a problem.
+#
+# Turn it on once per clone (Git then runs scripts/hooks/pre-commit before every commit):
+#     git config core.hooksPath scripts/hooks
+# Skip it for one commit (use rarely):
+#     git commit --no-verify
+#
+# Tools are found through the CLANG_FORMAT / CLANG_TIDY environment variables if set, otherwise
+# on PATH. See CONTRIBUTING.md for the Windows setup.
+
+# The version CI uses (.github/workflows/ci.yml). Other versions sometimes format code differently.
+CI_CLANG_FORMAT_VERSION=18
+
+# clang-tidy needs the compile commands of a configured build to know the include paths.
+TIDY_BUILD_DIR=build/dev
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+# Picks the first tool name that exists: $1 is the environment variable's value, the rest are
+# names to try on PATH. Prints nothing if none is found.
+find_tool() {
+    if [ -n "$1" ]; then
+        echo "$1"
+        return
+    fi
+    shift
+    for name in "$@"; do
+        if command -v "$name" >/dev/null 2>&1; then
+            echo "$name"
+            return
+        fi
+    done
+}
+
+# Only look at files that are added, copied, modified or renamed in this commit.
+staged_files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.cpp' '*.hpp' '*.h')
+if [ -z "$staged_files" ]; then
+    exit 0
+fi
+
+failed=0
+
+# ---- clang-format ------------------------------------------------------------------------------
+clang_format=$(find_tool "$CLANG_FORMAT" clang-format-$CI_CLANG_FORMAT_VERSION clang-format)
+if [ -z "$clang_format" ]; then
+    echo "pre-commit: clang-format not found. Set CLANG_FORMAT or add it to PATH (see CONTRIBUTING.md)."
+    exit 1
+fi
+
+# Warn (but do not stop) when the local version differs from CI's, because then this check can
+# pass here and the CI format check can still fail.
+if ! "$clang_format" --version | grep -q "version $CI_CLANG_FORMAT_VERSION\."; then
+    echo "pre-commit: warning: CI uses clang-format $CI_CLANG_FORMAT_VERSION, you have: $("$clang_format" --version)"
+fi
+
+for file in $staged_files; do
+    # Check the staged version of the file (what will actually be committed), not the copy on
+    # disk, which may contain further changes that are not being committed.
+    if ! git show ":$file" | "$clang_format" --assume-filename="$file" --dry-run --Werror >/dev/null 2>&1; then
+        echo "pre-commit: $file is not formatted. Fix it with:"
+        echo "    \"$clang_format\" -i $file && git add $file"
+        failed=1
+    fi
+done
+
+# ---- clang-tidy --------------------------------------------------------------------------------
+# Ubuntu's apt package installs it only as "clang-tidy-18", so try that name too.
+clang_tidy=$(find_tool "$CLANG_TIDY" clang-tidy clang-tidy-$CI_CLANG_FORMAT_VERSION)
+compile_db="$TIDY_BUILD_DIR/compile_commands.json"
+skip_tidy=""
+
+if [ -z "$clang_tidy" ]; then
+    skip_tidy="clang-tidy not found (set CLANG_TIDY or add it to PATH)"
+elif [ ! -f "$compile_db" ]; then
+    skip_tidy="$compile_db is missing (run: cmake --preset dev)"
+else
+    # On Windows clang-tidy finds the MSVC standard headers through the INCLUDE variable, which
+    # only a "Developer" terminal (vcvars64.bat) sets. Without it every file fails with
+    # "'string' file not found", so we skip with an explanation instead.
+    case "$(uname -s)" in
+        MINGW* | MSYS* | CYGWIN*)
+            case "$INCLUDE" in
+                *MSVC*) ;;
+                *) skip_tidy="MSVC headers not set up (commit from a Developer terminal, see CONTRIBUTING.md)" ;;
+            esac
+            ;;
+    esac
+fi
+
+if [ -n "$skip_tidy" ]; then
+    echo "pre-commit: skipping clang-tidy: $skip_tidy"
+else
+    for file in $staged_files; do
+        # Headers are checked through the .cpp files that include them (HeaderFilterRegex in
+        # .clang-tidy). Files that are not part of the configured build (for example the GUI
+        # when it is turned off) have no compile command, so clang-tidy cannot check them.
+        case "$file" in
+            *.cpp) ;;
+            *) continue ;;
+        esac
+        if ! grep -q "/$file\"" "$compile_db"; then
+            echo "pre-commit: skipping clang-tidy for $file (not in $compile_db)"
+            continue
+        fi
+        # Note: clang-tidy reads the file on disk, so unstaged edits to it are checked too.
+        if ! "$clang_tidy" -p "$TIDY_BUILD_DIR" --quiet --warnings-as-errors='*' "$file" 2>/dev/null; then
+            echo "pre-commit: clang-tidy found problems in $file (see above)."
+            failed=1
+        fi
+    done
+fi
+
+if [ "$failed" -ne 0 ]; then
+    echo "pre-commit: commit stopped. Fix the problems above and commit again."
+    exit 1
+fi
+exit 0

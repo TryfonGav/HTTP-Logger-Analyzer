@@ -15,6 +15,7 @@ target_include_directories(httplogger_core PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/g
 
 httplogger_set_warnings(httplogger_core)
 httplogger_enable_sanitizers(httplogger_core)
+httplogger_enable_coverage(httplogger_core)
 
 # Phase 2: link third-party libraries from vcpkg, e.g.
 # find_package(asio CONFIG REQUIRED)
