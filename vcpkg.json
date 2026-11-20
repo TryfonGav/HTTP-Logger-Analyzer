@@ -2,6 +2,7 @@
   "name": "httplogger",
   "version-semver": "0.1.0",
   "description": "HTTP Logger and Analyzer",
+  "builtin-baseline": "74f5ea45ca78988784b810ad9bbb148ea7ff76d8",
   "dependencies": [
     "asio",
     "llhttp",
