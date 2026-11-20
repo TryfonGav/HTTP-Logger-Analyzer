@@ -29,6 +29,12 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "DIPPER_SANITIZERS": "ON" }
     },
     {
+      "name": "coverage",
+      "displayName": "Debug + code coverage (GCC/Clang; report with gcovr)",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "DIPPER_COVERAGE": "ON" }
+    },
+    {
       "name": "gui",
       "displayName": "Debug with Qt 6 GUI (set CMAKE_PREFIX_PATH to your Qt install)",
       "inherits": "dev",
@@ -45,20 +51,30 @@
       "displayName": "CI: sanitizers, warnings as errors",
       "inherits": "asan",
       "cacheVariables": { "DIPPER_WARNINGS_AS_ERRORS": "ON" }
+    },
+    {
+      "name": "ci-coverage",
+      "displayName": "CI: code coverage, warnings as errors",
+      "inherits": "coverage",
+      "cacheVariables": { "DIPPER_WARNINGS_AS_ERRORS": "ON" }
     }
   ],
   "buildPresets": [
     { "name": "dev", "configurePreset": "dev" },
     { "name": "release", "configurePreset": "release" },
     { "name": "asan", "configurePreset": "asan" },
+    { "name": "coverage", "configurePreset": "coverage" },
     { "name": "gui", "configurePreset": "gui" },
     { "name": "ci", "configurePreset": "ci" },
-    { "name": "ci-asan", "configurePreset": "ci-asan" }
+    { "name": "ci-asan", "configurePreset": "ci-asan" },
+    { "name": "ci-coverage", "configurePreset": "ci-coverage" }
   ],
   "testPresets": [
     { "name": "dev", "configurePreset": "dev", "output": { "outputOnFailure": true } },
     { "name": "asan", "configurePreset": "asan", "output": { "outputOnFailure": true } },
+    { "name": "coverage", "configurePreset": "coverage", "output": { "outputOnFailure": true } },
     { "name": "ci", "configurePreset": "ci", "output": { "outputOnFailure": true } },
-    { "name": "ci-asan", "configurePreset": "ci-asan", "output": { "outputOnFailure": true } }
+    { "name": "ci-asan", "configurePreset": "ci-asan", "output": { "outputOnFailure": true } },
+    { "name": "ci-coverage", "configurePreset": "ci-coverage", "output": { "outputOnFailure": true } }
   ]
 }

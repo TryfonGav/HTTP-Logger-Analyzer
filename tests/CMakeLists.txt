@@ -19,6 +19,7 @@ add_executable(dipper_unit_tests
 )
 target_link_libraries(dipper_unit_tests PRIVATE dipper::core GTest::gtest_main)
 dipper_enable_sanitizers(dipper_unit_tests)
+dipper_enable_coverage(dipper_unit_tests)
 # gtest_add_tests finds the tests by reading the TEST(...) lines in the source files.
 # We do not use gtest_discover_tests: it runs the test program and asks GoogleTest to write a
 # JSON list into the build folder, and GoogleTest cannot open files whose path contains

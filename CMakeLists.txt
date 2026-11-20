@@ -24,10 +24,12 @@ option(DIPPER_BUILD_TESTS  "Build unit and integration tests"        ON)
 option(DIPPER_BUILD_GUI    "Build the Qt 6 desktop application"       OFF)
 option(DIPPER_SANITIZERS   "Enable AddressSanitizer + UBSan (GCC/Clang)" OFF)
 option(DIPPER_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
+option(DIPPER_COVERAGE    "Build with code-coverage instrumentation (GCC/Clang)" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(CompilerWarnings)
 include(Sanitizers)
+include(Coverage)
 
 add_subdirectory(src/core)
 add_subdirectory(src/cli)

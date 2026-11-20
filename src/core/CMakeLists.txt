@@ -16,6 +16,7 @@ target_include_directories(dipper_core PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/gener
 
 dipper_set_warnings(dipper_core)
 dipper_enable_sanitizers(dipper_core)
+dipper_enable_coverage(dipper_core)
 
 # Phase 2: link third-party libraries from vcpkg, e.g.
 # find_package(asio CONFIG REQUIRED)
