@@ -1,8 +1,7 @@
 #include "httplogger/version.hpp"
 
-#include <gtest/gtest.h>
-
 #include <algorithm>
+#include <gtest/gtest.h>
 
 TEST(Version, IsSemanticVersion) {
     const auto v = httplogger::version();
