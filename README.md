@@ -83,8 +83,12 @@ If configure stops with "vcpkg was not found", `VCPKG_ROOT` is not set in that t
 | --- | --- |
 | `dev` | Debug build for daily work |
 | `asan` | Debug with AddressSanitizer + UBSan |
+| `coverage` | Debug with code coverage for gcovr (GCC/Clang only) |
 | `gui` | Debug including the Qt 6 app (`-DCMAKE_PREFIX_PATH=<Qt dir>`) |
 | `release` | Optimised build |
+
+Before your first commit, turn on the formatting and clang-tidy hook:
+`git config core.hooksPath scripts/hooks` (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ## Usage
 
@@ -105,11 +109,12 @@ tests/        unit, integration, fuzz tests and fixtures
 bench/        performance benchmarks
 docs/         requirements, architecture, ADRs, testing, evaluation, user guide, AI journal
 project/      meeting-log mirror and planning material
-scripts/      setup_github_board.sh and developer helpers
+scripts/      setup_github_board.sh, git hooks (scripts/hooks/) and developer helpers
 ```
 
 ## Documentation
 
+- [Contributing and coding conventions](CONTRIBUTING.md)
 - [Architecture](docs/architecture/ARCHITECTURE.md)
 - [Requirements (SRS)](docs/requirements/SRS.md)
 - [Architecture decision records](docs/decisions/)
