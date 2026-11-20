@@ -7,7 +7,7 @@ can start monitoring in a few clicks. Power users get a filter language, analyti
 interception and a scriptable CLI.
 
 > CCS3900 Individual Project, BSc Computer Science, CITY College, University of York Europe Campus, 2026–2027.
-> Supervisor: _name_. Student: _name_.
+> Student: Tryfon Gavrilis.
 
 ---
 
