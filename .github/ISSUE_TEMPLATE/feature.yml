@@ -1,0 +1,30 @@
+name: Feature / task
+description: A piece of work on the HTTP Logger & Analyzer
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What this delivers and for whom (beginner or power user).
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable checklist. The issue is done when every box is ticked.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: input
+    id: requirement
+    attributes:
+      label: Requirement ID(s)
+      description: From docs/requirements/SRS.md, e.g. FR-03, NFR-02
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / design links

@@ -1,0 +1,21 @@
+name: Research / reading
+description: Literature, tool comparison or technical investigation (feeds the dissertation)
+labels: ["type:research"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question to answer
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources (IEEE style)
+      value: |
+        [1]
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome / decision
+      description: Summarise findings; link the ADR or dissertation section it feeds.

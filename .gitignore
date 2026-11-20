@@ -1,0 +1,30 @@
+# Build output
+build/
+out/
+cmake-build-*/
+compile_commands.json
+.vcpkg-cache/
+vcpkg_installed/
+
+# IDEs
+.vscode/
+.idea/
+.vs/
+*.user
+CMakeUserPresets.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Captured data - never commit real traffic (may contain personal data)
+*.httplog
+*.pcap
+*.pcapng
+captures/
+!tests/fixtures/**
+
+# Local CA material for HTTPS interception - never commit private keys
+*.key
+*.pem
+!tests/fixtures/**/*.pem

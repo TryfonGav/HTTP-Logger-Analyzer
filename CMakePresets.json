@@ -1,0 +1,64 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": { "HTTPLOGGER_BUILD_TESTS": "ON" }
+    },
+    {
+      "name": "dev",
+      "displayName": "Debug (local development)",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "asan",
+      "displayName": "Debug + AddressSanitizer/UBSan (GCC/Clang)",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "HTTPLOGGER_SANITIZERS": "ON" }
+    },
+    {
+      "name": "gui",
+      "displayName": "Debug with Qt 6 GUI (set CMAKE_PREFIX_PATH to your Qt install)",
+      "inherits": "dev",
+      "cacheVariables": { "HTTPLOGGER_BUILD_GUI": "ON" }
+    },
+    {
+      "name": "ci",
+      "displayName": "CI: Release, warnings as errors",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "HTTPLOGGER_WARNINGS_AS_ERRORS": "ON" }
+    },
+    {
+      "name": "ci-asan",
+      "displayName": "CI: sanitizers, warnings as errors",
+      "inherits": "asan",
+      "cacheVariables": { "HTTPLOGGER_WARNINGS_AS_ERRORS": "ON" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "dev", "configurePreset": "dev" },
+    { "name": "release", "configurePreset": "release" },
+    { "name": "asan", "configurePreset": "asan" },
+    { "name": "gui", "configurePreset": "gui" },
+    { "name": "ci", "configurePreset": "ci" },
+    { "name": "ci-asan", "configurePreset": "ci-asan" }
+  ],
+  "testPresets": [
+    { "name": "dev", "configurePreset": "dev", "output": { "outputOnFailure": true } },
+    { "name": "asan", "configurePreset": "asan", "output": { "outputOnFailure": true } },
+    { "name": "ci", "configurePreset": "ci", "output": { "outputOnFailure": true } },
+    { "name": "ci-asan", "configurePreset": "ci-asan", "output": { "outputOnFailure": true } }
+  ]
+}

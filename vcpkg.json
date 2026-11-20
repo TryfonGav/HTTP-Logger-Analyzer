@@ -1,0 +1,26 @@
+{
+  "name": "httplogger",
+  "version-semver": "0.1.0",
+  "description": "HTTP Logger and Analyzer",
+  "dependencies": [
+    "asio",
+    "llhttp",
+    { "name": "sqlite3", "features": ["fts5"] },
+    "nlohmann-json",
+    "cli11",
+    "spdlog",
+    "zlib",
+    "brotli",
+    "gtest"
+  ],
+  "features": {
+    "https": {
+      "description": "Opt-in HTTPS interception with a local CA (Phase 4)",
+      "dependencies": ["openssl"]
+    },
+    "pcap": {
+      "description": "Passive capture from a network interface (Phase 4). On Windows install the Npcap SDK separately.",
+      "dependencies": [{ "name": "libpcap", "platform": "!windows" }]
+    }
+  }
+}
