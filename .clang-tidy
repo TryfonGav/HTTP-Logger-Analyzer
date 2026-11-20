@@ -1,14 +1,29 @@
 ---
+# Which checks run, and why:
+# - bugprone-*     finds real mistakes (wrong argument order, dangling references, ...).
+# - performance-*  finds needless copies (e.g. passing std::string by value).
+# - readability-*  keeps the code easy to read.
+# We do NOT enable modernize-* or cppcoreguidelines-*: they push "auto", trailing return types and
+# other modern patterns that go against this project's plain coding style (see CONTRIBUTING.md).
+#
+# Checks turned off below:
+# - readability-identifier-length / readability-magic-numbers: too noisy for short names like
+#   "i" or obvious numbers like 200 (HTTP OK).
+# - readability-use-anyofallof: suggests std::any_of with a lambda instead of a plain for loop.
+# - readability-implicit-bool-conversion: flags normal checks such as "if (pointer)".
+# - bugprone-easily-swappable-parameters: warns on almost every function that takes two
+#   std::string parameters, which is common in an HTTP parser.
 Checks: >
   -*,
   bugprone-*,
-  cppcoreguidelines-*,
-  modernize-*,
   performance-*,
   readability-*,
-  -modernize-use-trailing-return-type,
   -readability-identifier-length,
   -readability-magic-numbers,
-  -cppcoreguidelines-avoid-magic-numbers
+  -readability-use-anyofallof,
+  -readability-implicit-bool-conversion,
+  -bugprone-easily-swappable-parameters
 WarningsAsErrors: ''
-HeaderFilterRegex: 'src/.*'
+# Also check our own headers (under src/), but not the vcpkg ones. [/\\] matches both "/" and the
+# "\" that Windows paths use.
+HeaderFilterRegex: '[/\\]src[/\\].*'
