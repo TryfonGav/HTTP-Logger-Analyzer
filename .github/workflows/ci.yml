@@ -23,10 +23,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use the runner's preinstalled vcpkg
+      # The runners come with a preinstalled vcpkg, but its version changes over time and can be
+      # older than our builtin-baseline (vcpkg then fails with "failed to git show
+      # versions/baseline.json"). So we clone vcpkg ourselves at exactly the baseline commit
+      # written in vcpkg.json, which keeps that file the only place the version is recorded.
+      - name: Set up vcpkg at the builtin-baseline commit
         shell: bash
         run: |
-          echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> "$GITHUB_ENV"
+          baseline=$(jq -r '."builtin-baseline"' vcpkg.json)
+          echo "vcpkg baseline: $baseline"
+          git clone --quiet https://github.com/microsoft/vcpkg.git "$RUNNER_TEMP/vcpkg"
+          git -C "$RUNNER_TEMP/vcpkg" checkout --quiet "$baseline"
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.bat" -disableMetrics
+          else
+            "$RUNNER_TEMP/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+          fi
+          echo "VCPKG_ROOT=$RUNNER_TEMP/vcpkg" >> "$GITHUB_ENV"
           mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
 
       - name: Cache vcpkg binaries
@@ -58,5 +71,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y clang-format
-      - run: git ls-files '*.cpp' '*.hpp' '*.h' | xargs --no-run-if-empty clang-format --dry-run --Werror
+      # Pin the clang-format version: different versions format some code differently,
+      # so an unpinned "latest" could make this check fail without any change on our side.
+      - run: sudo apt-get update && sudo apt-get install -y clang-format-18
+      - run: git ls-files '*.cpp' '*.hpp' '*.h' | xargs --no-run-if-empty clang-format-18 --dry-run --Werror
