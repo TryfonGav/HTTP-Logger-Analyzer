@@ -37,14 +37,43 @@ _Added in Phase 3._
 ## Build from source
 
 **Prerequisites:** a C++20 compiler (GCC 12+, Clang 15+ or MSVC 2022), CMake 3.25+, Ninja,
-[vcpkg](https://github.com/microsoft/vcpkg) with `VCPKG_ROOT` set. Qt 6 only for the GUI.
+Git and [vcpkg](https://github.com/microsoft/vcpkg) with `VCPKG_ROOT` set. Qt 6 only for the GUI.
+Dependency versions are pinned by `builtin-baseline` in `vcpkg.json`, so everyone gets the same ones.
+
+### One-time setup on Windows
+
+1. Install Visual Studio 2022 (Community or Build Tools) with the **Desktop development with C++**
+   workload, plus [CMake](https://cmake.org/download/) and Git.
+2. Install Ninja: `winget install --id Ninja-build.Ninja -e`
+3. Install vcpkg and point `VCPKG_ROOT` at it (PowerShell):
+   ```powershell
+   git clone https://github.com/microsoft/vcpkg C:\vcpkg
+   C:\vcpkg\bootstrap-vcpkg.bat -disableMetrics
+   [Environment]::SetEnvironmentVariable("VCPKG_ROOT", "C:\vcpkg", "User")
+   ```
+   If you already have vcpkg, run `git pull` and `bootstrap-vcpkg.bat` in it instead: it must be
+   at least as new as the `builtin-baseline` commit.
+4. Open a **new** "x64 Native Tools Command Prompt for VS 2022" or "Developer PowerShell for
+   VS 2022" from the Start menu (this puts the MSVC compiler on `PATH`) and build from there.
+
+### One-time setup on Linux (Ubuntu 24.04)
 
 ```bash
-cmake --preset dev          # configure (vcpkg installs dependencies on first run)
+sudo apt install build-essential cmake ninja-build git curl zip unzip tar pkg-config
+git clone https://github.com/microsoft/vcpkg ~/vcpkg && ~/vcpkg/bootstrap-vcpkg.sh -disableMetrics
+echo 'export VCPKG_ROOT="$HOME/vcpkg"' >> ~/.bashrc && source ~/.bashrc
+```
+
+### Build and test
+
+```bash
+cmake --preset dev          # configure (vcpkg builds dependencies on first run: 10-30 min)
 cmake --build --preset dev  # build
 ctest --preset dev          # run tests
 ./build/dev/src/cli/httplog --version
 ```
+
+If configure stops with "vcpkg was not found", `VCPKG_ROOT` is not set in that terminal.
 
 | Preset | Use |
 | --- | --- |
