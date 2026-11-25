@@ -13,16 +13,16 @@ endif()
 
 include(GoogleTest)
 
-add_executable(httplogger_unit_tests
+add_executable(dipper_unit_tests
     unit/test_version.cpp
 )
-target_link_libraries(httplogger_unit_tests PRIVATE httplogger::core GTest::gtest_main)
-httplogger_enable_sanitizers(httplogger_unit_tests)
+target_link_libraries(dipper_unit_tests PRIVATE dipper::core GTest::gtest_main)
+dipper_enable_sanitizers(dipper_unit_tests)
 # gtest_add_tests finds the tests by reading the TEST(...) lines in the source files.
 # We do not use gtest_discover_tests: it runs the test program and asks GoogleTest to write a
 # JSON list into the build folder, and GoogleTest cannot open files whose path contains
 # non-ASCII letters on Windows (for example a Greek "Desktop" folder), which breaks the build.
-gtest_add_tests(TARGET httplogger_unit_tests)
+gtest_add_tests(TARGET dipper_unit_tests)
 
 # Phase 2: add integration/ tests (proxy + local test server end to end)
 # Phase 5: add fuzz/ targets (libFuzzer, Clang only)

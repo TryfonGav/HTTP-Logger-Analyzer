@@ -1,11 +1,11 @@
-#include "httplogger/version.hpp"
+#include "dipper/version.hpp"
 
 #include "version_config.hpp"
 
-namespace httplogger {
+namespace dipper {
 
 std::string_view version() noexcept {
-    return HTTPLOGGER_VERSION_STRING;
+    return DIPPER_VERSION_STRING;
 }
 
-} // namespace httplogger
+} // namespace dipper

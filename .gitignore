@@ -18,7 +18,7 @@ CMakeUserPresets.json
 Thumbs.db
 
 # Captured data - never commit real traffic (may contain personal data)
-*.httplog
+*.dipper
 *.pcap
 *.pcapng
 captures/

@@ -1,10 +1,14 @@
-# HTTP Logger & Analyzer
+# Dipper
 
 ![CI](https://github.com/TryfonGav/HTTP-Logger-Analyzer/actions/workflows/ci.yml/badge.svg)
 
-A cross-platform C++20 tool that records HTTP traffic and helps you understand it. Beginners
-can start monitoring in a few clicks. Power users get a filter language, analytics, HTTPS
-interception and a scriptable CLI.
+Dipper is a cross-platform C++20 tool that records HTTP traffic and helps you understand it.
+Beginners can start monitoring in a few clicks. Power users get a filter language, analytics,
+HTTPS interception and a scriptable CLI.
+
+> **Why "Dipper"?** The dipper is a small bird that walks along the bottom of a fast stream,
+> entirely at home in the current. Dipper does the same with HTTP traffic: it sits in the flow,
+> takes in everything that passes, and surfaces what matters.
 
 > CCS3900 Individual Project, BSc Computer Science, CITY College, University of York Europe Campus, 2026–2027.
 > Student: Tryfon Gavrilis.
@@ -31,7 +35,7 @@ _Added in Phase 3._
 ## Quick start (users)
 
 1. Download the latest release for your OS from [Releases](../../releases).
-2. Run **HTTP Logger**; the setup wizard sets the proxy port (default `8080`).
+2. Run **Dipper**; the setup wizard sets the proxy port (default `8080`).
 3. Point your browser at the proxy, then open any website: requests appear live.
 
 ## Build from source
@@ -70,7 +74,7 @@ echo 'export VCPKG_ROOT="$HOME/vcpkg"' >> ~/.bashrc && source ~/.bashrc
 cmake --preset dev          # configure (vcpkg builds dependencies on first run: 10-30 min)
 cmake --build --preset dev  # build
 ctest --preset dev          # run tests
-./build/dev/src/cli/httplog --version
+./build/dev/src/cli/dipper --version
 ```
 
 If configure stops with "vcpkg was not found", `VCPKG_ROOT` is not set in that terminal.
@@ -85,17 +89,17 @@ If configure stops with "vcpkg was not found", `VCPKG_ROOT` is not set in that t
 ## Usage
 
 ```bash
-httplog capture --port 8080            # start the proxy and log to a session file
-httplog list --filter "status:>=400"   # query a saved session
-httplog export --format har -o out.har # export for browser DevTools
+dipper capture --port 8080            # start the proxy and log to a session file
+dipper list --filter "status:>=400"   # query a saved session
+dipper export --format har -o out.har # export for browser DevTools
 ```
 _CLI arrives in Phase 2; the commands above are the target interface._
 
 ## Repository layout
 
 ```
-src/core/     libhttplogger_core: capture, parser, storage, analyzer, export (no GUI dependency)
-src/cli/      httplog command-line tool
+src/core/     libdipper_core: capture, parser, storage, analyzer, export (no GUI dependency)
+src/cli/      dipper command-line tool
 src/gui/      Qt 6 desktop app
 tests/        unit, integration, fuzz tests and fixtures
 bench/        performance benchmarks

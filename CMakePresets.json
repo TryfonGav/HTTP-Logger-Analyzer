@@ -8,7 +8,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-      "cacheVariables": { "HTTPLOGGER_BUILD_TESTS": "ON" }
+      "cacheVariables": { "DIPPER_BUILD_TESTS": "ON" }
     },
     {
       "name": "dev",
@@ -26,25 +26,25 @@
       "name": "asan",
       "displayName": "Debug + AddressSanitizer/UBSan (GCC/Clang)",
       "inherits": "base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "HTTPLOGGER_SANITIZERS": "ON" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "DIPPER_SANITIZERS": "ON" }
     },
     {
       "name": "gui",
       "displayName": "Debug with Qt 6 GUI (set CMAKE_PREFIX_PATH to your Qt install)",
       "inherits": "dev",
-      "cacheVariables": { "HTTPLOGGER_BUILD_GUI": "ON" }
+      "cacheVariables": { "DIPPER_BUILD_GUI": "ON" }
     },
     {
       "name": "ci",
       "displayName": "CI: Release, warnings as errors",
       "inherits": "base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "HTTPLOGGER_WARNINGS_AS_ERRORS": "ON" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "DIPPER_WARNINGS_AS_ERRORS": "ON" }
     },
     {
       "name": "ci-asan",
       "displayName": "CI: sanitizers, warnings as errors",
       "inherits": "asan",
-      "cacheVariables": { "HTTPLOGGER_WARNINGS_AS_ERRORS": "ON" }
+      "cacheVariables": { "DIPPER_WARNINGS_AS_ERRORS": "ON" }
     }
   ],
   "buildPresets": [

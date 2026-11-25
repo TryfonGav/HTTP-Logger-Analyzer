@@ -1,7 +1,7 @@
 {
-  "name": "httplogger",
+  "name": "dipper",
   "version-semver": "0.1.0",
-  "description": "HTTP Logger and Analyzer",
+  "description": "Dipper: an HTTP traffic recorder and analyzer",
   "builtin-baseline": "74f5ea45ca78988784b810ad9bbb148ea7ff76d8",
   "dependencies": [
     "asio",

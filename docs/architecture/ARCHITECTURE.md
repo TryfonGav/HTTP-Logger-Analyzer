@@ -18,7 +18,7 @@
 
 ```mermaid
 flowchart LR
-    U[Beginner / power user] -->|GUI or CLI| T[HTTP Logger & Analyzer]
+    U[Beginner / power user] -->|GUI or CLI| T[Dipper]
     B[Browser / app under test] -->|HTTP via proxy| T
     T -->|forwards request| S[Web server]
     N[Network interface] -.->|passive capture, advanced| T
@@ -29,7 +29,7 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph core[libhttplogger_core]
+    subgraph core[libdipper_core]
         direction TB
         C1[Proxy capture<br/>Asio] --> P[Parser & normaliser<br/>llhttp + TCP reassembly]
         C2[Passive capture<br/>libpcap/Npcap] --> P
@@ -45,7 +45,7 @@ flowchart TB
         LIVE --> API
     end
     API --> GUI[Qt 6 GUI<br/>beginners]
-    API --> CLI[httplog CLI<br/>power users]
+    API --> CLI[dipper CLI<br/>power users]
     API --> TESTS[Tests]
 ```
 
@@ -90,7 +90,7 @@ Qt queued signal.
 
 ## 7. Storage
 
-One SQLite file per session (`*.httplog`), WAL mode, indexes on time, host, status, method;
+One SQLite file per session (`*.dipper`), WAL mode, indexes on time, host, status, method;
 FTS5 table over URLs and text bodies; large bodies stored with a size cap.
 
 ## 8. Security and ethics
