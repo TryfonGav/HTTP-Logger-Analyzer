@@ -2,6 +2,7 @@
 # Has no GUI dependency, so the CLI, the Qt app and the tests all link the same code.
 add_library(dipper_core
     src/version.cpp
+    src/http_transaction.cpp
     # Phase 2+: add sources under src/capture, src/parser, src/storage, src/analyzer, src/export
 )
 add_library(dipper::core ALIAS dipper_core)
