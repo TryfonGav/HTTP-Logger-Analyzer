@@ -2,7 +2,7 @@
 # =============================================================================
 # setup_github_board.sh
 # Creates the labels, milestones, issues and GitHub Projects (v2) board for the
-# HTTP Logger & Analyzer CCS3900 individual project.
+# Dipper CCS3900 individual project.
 #
 # Requirements : GitHub CLI (gh) 2.40+, logged in with project scope:
 #                  gh auth login
@@ -21,7 +21,7 @@
 set -euo pipefail
 
 REPO="${1:-${REPO:-}}"
-PROJECT_TITLE="${PROJECT_TITLE:-HTTP Logger & Analyzer (CCS3900)}"
+PROJECT_TITLE="${PROJECT_TITLE:-Dipper (CCS3900)}"
 DRY_RUN="${DRY_RUN:-0}"
 SKIP_PROJECT="${SKIP_PROJECT:-0}"
 
@@ -119,7 +119,7 @@ create_labels() {
   label "area:storage"  "C2E0C6" "SQLite session store"
   label "area:analyzer" "C2E0C6" "Stats, filters, rules"
   label "area:gui"      "C2E0C6" "Qt desktop app"
-  label "area:cli"      "C2E0C6" "httplog command-line tool"
+  label "area:cli"      "C2E0C6" "dipper command-line tool"
   label "area:build"    "C2E0C6" "CMake, vcpkg, CI"
 
   label "priority:must"   "B60205" "MoSCoW: Must have"
@@ -432,7 +432,7 @@ EOF
 
 issue "Design the HTTP transaction data model" "$M2" "$P1" "phase:1-foundation,type:design,area:parser,priority:must" <<'EOF'
 ## Acceptance criteria
-- [ ] `HttpTransaction`, `Headers`, `Timings` types in `src/core/include/httplogger/`
+- [ ] `HttpTransaction`, `Headers`, `Timings` types in `src/core/include/dipper/`
 - [ ] Covers request, response, sizes, timings, connection info, capture mode, errors
 - [ ] Unit tests for construction and invariants
 - [ ] Documented in ARCHITECTURE.md section 5
@@ -513,7 +513,7 @@ issue "Implement the SQLite session store" "$M2" "$P2" "phase:2-core-logging,typ
 - [ ] Schema with versioned migrations; WAL mode
 - [ ] Batched inserts; indexes on time, host, status, method
 - [ ] Bodies stored up to a configurable size cap
-- [ ] One `.httplog` file per session; reopening restores it
+- [ ] One `.dipper` file per session; reopening restores it
 - [ ] Unit tests on a temporary database
 EOF
 
@@ -541,8 +541,8 @@ EOF
 
 issue "Build CLI v1: capture, list and export" "$M2" "$P2" "phase:2-core-logging,type:feature,area:cli,priority:must" <<'EOF'
 ## Acceptance criteria
-- [ ] `httplog capture --port N [--out file]` with live one-line-per-request output
-- [ ] `httplog list <session> [--filter ...]` and `httplog export <session> --format har|json|csv`
+- [ ] `dipper capture --port N [--out file]` with live one-line-per-request output
+- [ ] `dipper list <session> [--filter ...]` and `dipper export <session> --format har|json|csv`
 - [ ] `--help` for every subcommand; meaningful exit codes
 - [ ] CLI tests for argument handling
 EOF
@@ -576,7 +576,7 @@ log "Phase 3: Beginner UI"
 
 issue "Create the Qt 6 application shell" "$M3" "$P3" "phase:3-beginner-ui,type:feature,area:gui,priority:must" <<'EOF'
 ## Acceptance criteria
-- [ ] Main window with menu, toolbar and status bar; links `httplogger::core`
+- [ ] Main window with menu, toolbar and status bar; links `dipper::core`
 - [ ] GUI build enabled in CI on at least one platform
 - [ ] Capture runs off the GUI thread; live events arrive via queued signals
 EOF
@@ -635,7 +635,7 @@ EOF
 
 issue "Save and open capture sessions" "$M3" "$P3" "phase:3-beginner-ui,type:feature,area:gui,priority:must" <<'EOF'
 ## Acceptance criteria
-- [ ] Save / Save As / Open for `.httplog` files; recent-files menu
+- [ ] Save / Save As / Open for `.dipper` files; recent-files menu
 - [ ] Unsaved-session prompt on exit
 - [ ] Export menu reuses the core HAR/JSON/CSV exporters
 EOF
@@ -733,7 +733,7 @@ EOF
 
 issue "Add headless analysis to the CLI" "$M3" "$P4" "phase:4-advanced,type:feature,area:cli,priority:should" <<'EOF'
 ## Acceptance criteria
-- [ ] `httplog analyze <session> [--filter ...]` prints the same statistics as the dashboard
+- [ ] `dipper analyze <session> [--filter ...]` prints the same statistics as the dashboard
 - [ ] `--json` output on every read command for scripting
 - [ ] Reads/writes stdin/stdout where it makes sense (pipe-friendly)
 EOF

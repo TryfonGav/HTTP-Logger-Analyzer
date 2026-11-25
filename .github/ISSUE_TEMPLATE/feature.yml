@@ -1,5 +1,5 @@
 name: Feature / task
-description: A piece of work on the HTTP Logger & Analyzer
+description: A piece of work on Dipper
 labels: ["type:feature"]
 body:
   - type: textarea

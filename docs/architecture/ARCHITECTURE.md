@@ -18,7 +18,7 @@
 
 ```mermaid
 flowchart LR
-    U[Beginner / power user] -->|GUI or CLI| T[HTTP Logger & Analyzer]
+    U[Beginner / power user] -->|GUI or CLI| T[Dipper]
     B[Browser / app under test] -->|HTTP via proxy| T
     T -->|forwards request| S[Web server]
     N[Network interface] -.->|passive capture, advanced| T
@@ -29,7 +29,7 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph core[libhttplogger_core]
+    subgraph core[libdipper_core]
         direction TB
         C1[Proxy capture<br/>Asio] --> P[Parser & normaliser<br/>llhttp + TCP reassembly]
         C2[Passive capture<br/>libpcap/Npcap] --> P
@@ -45,7 +45,7 @@ flowchart TB
         LIVE --> API
     end
     API --> GUI[Qt 6 GUI<br/>beginners]
-    API --> CLI[httplog CLI<br/>power users]
+    API --> CLI[dipper CLI<br/>power users]
     API --> TESTS[Tests]
 ```
 
@@ -76,11 +76,40 @@ sequenceDiagram
     Q-->>GUI: live event
 ```
 
-## 5. Data model (draft)
+## 5. Data model
 
-`HttpTransaction`: id, session id, client address, server host/port, scheme, method, URL,
-request headers/body ref, status code, response headers/body ref, sizes, timings
-(start, DNS, connect, TLS, TTFB, total), capture mode, error (if any).
+Defined as plain structs in `src/core/include/dipper/http_transaction.hpp`. Every part of
+the tool (proxy, parser, store, analyzer, exporters, GUI) passes these same types around.
+
+| Type | Contents |
+| --- | --- |
+| `Header` | `name`, `value` |
+| `Headers` | `std::vector<Header>`, kept in arrival order; the same name may appear more than once (e.g. `Set-Cookie`) |
+| `HttpRequest` | method, URL, HTTP version, headers, body, real body size in bytes |
+| `HttpResponse` | status code, reason, HTTP version, headers, body, real body size in bytes |
+| `Timings` | start time (wall clock), then DNS, connect, TLS, time to first byte and total, in milliseconds |
+| `CaptureMode` | `Proxy`, `HttpsIntercept`, `Import` |
+| `TransactionError` | `None`, `DnsFailed`, `ConnectionRefused`, `Timeout`, `ParseError`, `Other` |
+| `HttpTransaction` | id, session id, client address/port, server host/port, scheme, request, `hasResponse` + response, timings, capture mode, error + error message |
+
+Design decisions:
+
+- **Headers are a vector, not a map.** HTTP allows repeated headers and their order can
+  matter, so a map would lose information. Header names are case-insensitive, so lookups go
+  through `findHeader(headers, name)`, which returns the first match ignoring case.
+- **"Not measured" is `kNotMeasured` (-1).** A phase that did not happen (no TLS on plain
+  HTTP, no response after a DNS failure) is -1, because 0 ms is a real measurement.
+- **Ids are 0 until stored.** The SQLite store (#25) assigns `id` and `sessionId`.
+- **Bodies are held in memory as `std::string` for now.** `bodySize` always records the real
+  size so a body can later be cut short (size cap, see section 7) without losing that fact.
+
+Invariants, checked by `findProblem(transaction)` (returns "" when the transaction is valid):
+
+1. A transaction has either a response or an error, never both and never neither.
+2. A response status code is between 100 and 599.
+3. Body sizes are not negative.
+4. Timings are either `kNotMeasured` or not negative, and time to first byte is not longer
+   than the total time.
 
 ## 6. Threading model
 
@@ -90,7 +119,7 @@ Qt queued signal.
 
 ## 7. Storage
 
-One SQLite file per session (`*.httplog`), WAL mode, indexes on time, host, status, method;
+One SQLite file per session (`*.dipper`), WAL mode, indexes on time, host, status, method;
 FTS5 table over URLs and text bodies; large bodies stored with a size cap.
 
 ## 8. Security and ethics

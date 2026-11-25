@@ -1,7 +1,7 @@
 <#
 .SYNOPSIS
   Creates the labels, milestones, issues and GitHub Projects board for the
-  HTTP Logger & Analyzer CCS3900 individual project. PowerShell version of
+  Dipper CCS3900 individual project. PowerShell version of
   setup_github_board.sh (same issues, same behaviour).
 
 .DESCRIPTION
@@ -25,7 +25,7 @@ param(
     [Parameter(Position = 0)][string]$Repo = $env:REPO,
     [switch]$DryRun,
     [switch]$SkipProject,
-    [string]$ProjectTitle = 'HTTP Logger & Analyzer (CCS3900)',
+    [string]$ProjectTitle = 'Dipper (CCS3900)',
     [string]$DuePortfolio = '',
     [string]$DuePanel = '',
     [string]$DueDemo = '',
@@ -278,7 +278,7 @@ $LabelList = @(
     ,@('area:storage', 'C2E0C6', 'SQLite session store')
     ,@('area:analyzer', 'C2E0C6', 'Stats, filters, rules')
     ,@('area:gui', 'C2E0C6', 'Qt desktop app')
-    ,@('area:cli', 'C2E0C6', 'httplog command-line tool')
+    ,@('area:cli', 'C2E0C6', 'dipper command-line tool')
     ,@('area:build', 'C2E0C6', 'CMake, vcpkg, CI')
     ,@('priority:must', 'B60205', 'MoSCoW: Must have')
     ,@('priority:should', 'FF9F1C', 'MoSCoW: Should have')
@@ -427,7 +427,7 @@ Complete `docs/requirements/SRS.md`.
 '@ }
     [pscustomobject]@{ Title = 'Design the HTTP transaction data model'; Milestone = $M2; Phase = $P1; Labels = 'phase:1-foundation,type:design,area:parser,priority:must'; Body = @'
 ## Acceptance criteria
-- [ ] `HttpTransaction`, `Headers`, `Timings` types in `src/core/include/httplogger/`
+- [ ] `HttpTransaction`, `Headers`, `Timings` types in `src/core/include/dipper/`
 - [ ] Covers request, response, sizes, timings, connection info, capture mode, errors
 - [ ] Unit tests for construction and invariants
 - [ ] Documented in ARCHITECTURE.md section 5
@@ -492,7 +492,7 @@ ADRs let you justify every choice at the viva (handbook 3.5).
 - [ ] Schema with versioned migrations; WAL mode
 - [ ] Batched inserts; indexes on time, host, status, method
 - [ ] Bodies stored up to a configurable size cap
-- [ ] One `.httplog` file per session; reopening restores it
+- [ ] One `.dipper` file per session; reopening restores it
 - [ ] Unit tests on a temporary database
 '@ }
     [pscustomobject]@{ Title = 'Implement the query API for stored transactions'; Milestone = $M2; Phase = $P2; Labels = 'phase:2-core-logging,type:feature,area:storage,priority:must'; Body = @'
@@ -516,8 +516,8 @@ ADRs let you justify every choice at the viva (handbook 3.5).
 '@ }
     [pscustomobject]@{ Title = 'Build CLI v1: capture, list and export'; Milestone = $M2; Phase = $P2; Labels = 'phase:2-core-logging,type:feature,area:cli,priority:must'; Body = @'
 ## Acceptance criteria
-- [ ] `httplog capture --port N [--out file]` with live one-line-per-request output
-- [ ] `httplog list <session> [--filter ...]` and `httplog export <session> --format har|json|csv`
+- [ ] `dipper capture --port N [--out file]` with live one-line-per-request output
+- [ ] `dipper list <session> [--filter ...]` and `dipper export <session> --format har|json|csv`
 - [ ] `--help` for every subcommand; meaningful exit codes
 - [ ] CLI tests for argument handling
 '@ }
@@ -540,7 +540,7 @@ ADRs let you justify every choice at the viva (handbook 3.5).
 '@ }
     [pscustomobject]@{ Title = 'Create the Qt 6 application shell'; Milestone = $M3; Phase = $P3; Labels = 'phase:3-beginner-ui,type:feature,area:gui,priority:must'; Body = @'
 ## Acceptance criteria
-- [ ] Main window with menu, toolbar and status bar; links `httplogger::core`
+- [ ] Main window with menu, toolbar and status bar; links `dipper::core`
 - [ ] GUI build enabled in CI on at least one platform
 - [ ] Capture runs off the GUI thread; live events arrive via queued signals
 '@ }
@@ -591,7 +591,7 @@ ADRs let you justify every choice at the viva (handbook 3.5).
 '@ }
     [pscustomobject]@{ Title = 'Save and open capture sessions'; Milestone = $M3; Phase = $P3; Labels = 'phase:3-beginner-ui,type:feature,area:gui,priority:must'; Body = @'
 ## Acceptance criteria
-- [ ] Save / Save As / Open for `.httplog` files; recent-files menu
+- [ ] Save / Save As / Open for `.dipper` files; recent-files menu
 - [ ] Unsaved-session prompt on exit
 - [ ] Export menu reuses the core HAR/JSON/CSV exporters
 '@ }
@@ -669,7 +669,7 @@ ADRs let you justify every choice at the viva (handbook 3.5).
 '@ }
     [pscustomobject]@{ Title = 'Add headless analysis to the CLI'; Milestone = $M3; Phase = $P4; Labels = 'phase:4-advanced,type:feature,area:cli,priority:should'; Body = @'
 ## Acceptance criteria
-- [ ] `httplog analyze <session> [--filter ...]` prints the same statistics as the dashboard
+- [ ] `dipper analyze <session> [--filter ...]` prints the same statistics as the dashboard
 - [ ] `--json` output on every read command for scripting
 - [ ] Reads/writes stdin/stdout where it makes sense (pipe-friendly)
 '@ }
