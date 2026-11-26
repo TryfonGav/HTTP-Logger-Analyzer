@@ -15,6 +15,7 @@ jobs:
           - { name: "Linux GCC",          os: ubuntu-24.04, cc: gcc,   cxx: g++,     preset: ci }
           - { name: "Linux Clang + ASan", os: ubuntu-24.04, cc: clang, cxx: clang++, preset: ci-asan }
           - { name: "Windows MSVC",       os: windows-2022, cc: cl,    cxx: cl,      preset: ci }
+          - { name: "Linux GCC + coverage", os: ubuntu-24.04, cc: gcc, cxx: g++,     preset: ci-coverage, coverage: true }
     runs-on: ${{ matrix.os }}
     env:
       CC: ${{ matrix.cc }}
@@ -65,6 +66,25 @@ jobs:
 
       - name: Test
         run: ctest --preset ${{ matrix.preset }}
+
+      # Only the coverage job: running the tests above wrote .gcda files into the build folder;
+      # gcovr turns them into an HTML report. --filter keeps only our core library (not the tests
+      # or the vcpkg libraries), because the core is the code the coverage target is about.
+      - name: Coverage report (gcovr)
+        if: matrix.coverage
+        run: |
+          sudo apt-get install -y gcovr
+          mkdir -p build/${{ matrix.preset }}/coverage
+          gcovr --root . --filter src/core/ --print-summary \
+                --html-details build/${{ matrix.preset }}/coverage/index.html \
+                build/${{ matrix.preset }}
+
+      - name: Upload coverage report
+        if: matrix.coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: build/${{ matrix.preset }}/coverage/
 
   format:
     name: clang-format check
