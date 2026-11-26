@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Transfer-Encoding: chunked
+Trailer: X-Checksum
+
+5;note=first
+Hello
+1
+ 
+6
+Dipper
+0
+X-Checksum: abc123
+

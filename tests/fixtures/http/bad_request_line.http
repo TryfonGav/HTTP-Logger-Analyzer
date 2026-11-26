@@ -1,0 +1,3 @@
+GET /index.html HTTX/1.1
+Host: example.com
+

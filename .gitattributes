@@ -1,0 +1,2 @@
+# HTTP test fixtures are raw bytes: HTTP needs CRLF line endings, so Git must never convert them.
+tests/fixtures/http/*.http -text

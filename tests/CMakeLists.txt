@@ -16,6 +16,7 @@ include(GoogleTest)
 add_executable(dipper_unit_tests
     unit/test_version.cpp
     unit/test_http_transaction.cpp
+    unit/test_http_parser.cpp
 )
 target_link_libraries(dipper_unit_tests PRIVATE dipper::core GTest::gtest_main)
 dipper_enable_sanitizers(dipper_unit_tests)
@@ -24,7 +25,9 @@ dipper_enable_coverage(dipper_unit_tests)
 # We do not use gtest_discover_tests: it runs the test program and asks GoogleTest to write a
 # JSON list into the build folder, and GoogleTest cannot open files whose path contains
 # non-ASCII letters on Windows (for example a Greek "Desktop" folder), which breaks the build.
-gtest_add_tests(TARGET dipper_unit_tests)
+# The tests run from this folder (tests/) so they can open fixtures by a short relative path,
+# e.g. "fixtures/http/request_get.http", which also avoids non-ASCII absolute paths.
+gtest_add_tests(TARGET dipper_unit_tests WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Phase 2: add integration/ tests (proxy + local test server end to end)
 # Phase 5: add fuzz/ targets (libFuzzer, Clang only)

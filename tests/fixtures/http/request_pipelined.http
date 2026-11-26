@@ -1,0 +1,9 @@
+GET http://example.com/one HTTP/1.1
+Host: example.com
+
+GET http://example.com/two HTTP/1.1
+Host: example.com
+
+GET http://example.com/three HTTP/1.1
+Host: example.com
+

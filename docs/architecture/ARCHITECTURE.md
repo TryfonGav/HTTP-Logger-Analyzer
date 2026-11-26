@@ -58,6 +58,30 @@ flowchart TB
 | Analyzer | Aggregate stats, evaluate filters and alert rules | `FilterExpr`, `Stats`, `RuleEngine` |
 | Export | Serialise sessions | `HarExporter`, `CsvExporter` |
 
+### Parser
+
+`HttpParser` (`src/core/include/dipper/http_parser.hpp`) is a thin wrapper around the
+[llhttp](https://github.com/nodejs/llhttp) C library (the HTTP/1.x parser used by Node.js).
+There is one parser per direction of a connection (`ParserMode::Requests` or `Responses`).
+The proxy calls `feed()` with every block it reads from the socket, in whatever pieces the
+network delivers, and collects finished `HttpRequest` / `HttpResponse` structs with
+`takeRequests()` / `takeResponses()`. `finish()` is called when the connection closes, which
+ends a response whose body runs until the close.
+
+- **Framing is done by llhttp:** `Content-Length`, chunked bodies (the stored body is the
+  decoded bytes), keep-alive and pipelined messages, 1xx responses, and no body for 204/304.
+  A response to `HEAD` has no body either; llhttp cannot know that from the response alone,
+  so the proxy calls `setNextResponseIsForHead()`.
+- **Body size cap:** at most `maxBodyBytes` (default 10 MiB) of each body are kept;
+  `bodySize` always counts the full size.
+- **Errors:** invalid input makes `feed()` return false with a message such as
+  `HPE_INVALID_HEADER_TOKEN: Invalid header field char`. The parser then stays failed, because
+  there is no safe way to find where the next message starts.
+- **CONNECT and `Upgrade`:** parsing stops and `isUpgraded()` becomes true; the following
+  bytes are a tunnel, not HTTP (handled in #22).
+- **Not done here yet:** `Content-Encoding` decoding (#27), timings (#23), a header size
+  limit (to revisit when fuzzing the parser, #59).
+
 ## 4. Request flow (proxy mode)
 
 ```mermaid

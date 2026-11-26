@@ -28,3 +28,6 @@ captures/
 *.key
 *.pem
 !tests/fixtures/**/*.pem
+
+# AI journal: kept local while I write my entries (temporary)
+docs/ai-journal/AI_JOURNAL.md
