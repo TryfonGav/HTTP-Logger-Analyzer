@@ -3,6 +3,7 @@
 add_library(dipper_core
     src/version.cpp
     src/http_transaction.cpp
+    src/http_parser.cpp
     # Phase 2+: add sources under src/capture, src/parser, src/storage, src/analyzer, src/export
 )
 add_library(dipper::core ALIAS dipper_core)
@@ -18,8 +19,9 @@ dipper_set_warnings(dipper_core)
 dipper_enable_sanitizers(dipper_core)
 dipper_enable_coverage(dipper_core)
 
-# Phase 2: link third-party libraries from vcpkg, e.g.
-# find_package(asio CONFIG REQUIRED)
-# find_package(llhttp CONFIG REQUIRED)
-# find_package(unofficial-sqlite3 CONFIG REQUIRED)
-# target_link_libraries(dipper_core PUBLIC asio::asio llhttp::llhttp_static unofficial::sqlite3::sqlite3)
+# llhttp (from vcpkg) does the low-level HTTP/1.x parsing for HttpParser. PUBLIC because
+# dipper/http_parser.hpp includes llhttp.h, so everything that uses the header needs it too.
+find_package(llhttp CONFIG REQUIRED)
+target_link_libraries(dipper_core PUBLIC llhttp::llhttp_static)
+
+# Later in Phase 2: asio::asio (#21), unofficial::sqlite3::sqlite3 (#25).
