@@ -17,6 +17,7 @@ add_executable(dipper_unit_tests
     unit/test_version.cpp
     unit/test_http_transaction.cpp
     unit/test_http_parser.cpp
+    unit/test_proxy_request.cpp
 )
 target_link_libraries(dipper_unit_tests PRIVATE dipper::core GTest::gtest_main)
 dipper_enable_sanitizers(dipper_unit_tests)
