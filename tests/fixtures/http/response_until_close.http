@@ -1,0 +1,5 @@
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Connection: close
+
+This body has no length; it ends when the server closes the connection.

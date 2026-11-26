@@ -1,0 +1,10 @@
+HTTP/1.1 204 No Content
+Content-Length: 50
+
+HTTP/1.1 304 Not Modified
+Content-Length: 1234
+
+HTTP/1.1 200 OK
+Content-Length: 2
+
+ok

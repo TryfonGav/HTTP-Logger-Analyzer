@@ -1,0 +1,8 @@
+GET http://example.com/index.html?page=1 HTTP/1.1
+Host: example.com
+User-Agent: dipper-test/1.0
+Accept: text/html
+X-Custom: one
+x-CUSTOM: two
+X-Empty:
+

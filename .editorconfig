@@ -10,3 +10,9 @@ indent_size = 4
 
 [*.{yml,yaml,json,md}]
 indent_size = 2
+
+# HTTP test fixtures must keep their exact bytes: CRLF line endings and no added final newline.
+[tests/fixtures/http/*.http]
+end_of_line = crlf
+insert_final_newline = false
+trim_trailing_whitespace = false
