@@ -137,9 +137,32 @@ Invariants, checked by `findProblem(transaction)` (returns "" when the transacti
 
 ## 6. Threading model
 
-_To decide (ADR):_ Asio `io_context` on a small thread pool for network I/O; one writer thread
-draining the capture queue into SQLite in batches; the GUI thread receives live events via a
-Qt queued signal.
+See [ADR-0002](../decisions/0002-blocking-proxy-threads.md) (draft).
+
+**Proxy (`ProxyServer`, #21).** Blocking (synchronous) Asio calls only, no async callbacks:
+
+- One **accept thread** waits for new client connections on `127.0.0.1:8080` by default
+  (`ProxyConfig` sets the address, the port, the timeout and the body cap).
+- Each client connection gets its **own `std::thread`**, which handles that connection's
+  requests one after another (keep-alive and pipelining), then ends.
+- For each request the connection thread looks up the server's address, opens a **new
+  connection to the server**, sends the request rewritten in origin-form (`GET /path`)
+  without the headers meant only for the proxy, and passes the response back **as it arrives,
+  in 16 KiB pieces**. A second `HttpParser` reads the same bytes to build the
+  `HttpTransaction`, so large responses are never held whole before they are sent on.
+- **Timeouts:** blocking Asio has no timeout setting, so before every read the thread asks the
+  operating system whether data is ready (`poll()` / `WSAPoll()` in `waitForData`), waiting
+  at most 250 ms at a time, up to `timeoutMs` in total. Between waits it checks a stop flag, so
+  `stop()` ends every thread quickly. Connecting to a server uses the operating system's own
+  connect timeout.
+- **Failures** are transactions too: DNS failure → `DnsFailed` (client gets 502), refused →
+  `ConnectionRefused` (502), no answer in time → `Timeout` (504), invalid HTTP → `ParseError`
+  (400 for a bad request, 502 for a bad response). `CONNECT` and protocol upgrades get 501
+  until the tunnel (#22). Request bodies are buffered whole; one over the body cap gets 413.
+- Every finished transaction goes to a callback (one call at a time) and one spdlog line.
+
+**Later:** one writer thread draining the capture queue into SQLite in batches (#24, #25); the
+GUI thread receives live events via a Qt queued signal (#35).
 
 ## 7. Storage
 

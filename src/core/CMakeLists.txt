@@ -4,6 +4,9 @@ add_library(dipper_core
     src/version.cpp
     src/http_transaction.cpp
     src/http_parser.cpp
+    src/proxy_request.cpp
+    src/proxy_server.cpp
+    src/socket_wait.cpp
     # Phase 2+: add sources under src/capture, src/parser, src/storage, src/analyzer, src/export
 )
 add_library(dipper::core ALIAS dipper_core)
@@ -24,4 +27,18 @@ dipper_enable_coverage(dipper_core)
 find_package(llhttp CONFIG REQUIRED)
 target_link_libraries(dipper_core PUBLIC llhttp::llhttp_static)
 
-# Later in Phase 2: asio::asio (#21), unofficial::sqlite3::sqlite3 (#25).
+# Asio (standalone, header-only) does the networking for the proxy. PUBLIC because
+# dipper/proxy_server.hpp uses Asio socket types. spdlog writes the log lines; only our .cpp
+# files use it, so it is PRIVATE.
+find_package(asio CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(dipper_core PUBLIC asio::asio PRIVATE spdlog::spdlog)
+# Turns off Asio's old (deprecated) functions. With them off, calls that report errors through an
+# error_code argument return nothing, so there is no ignored return value to warn about.
+target_compile_definitions(dipper_core PUBLIC ASIO_NO_DEPRECATED)
+if(WIN32)
+    # Asio needs to know the oldest Windows version to support; 0x0A00 is Windows 10.
+    target_compile_definitions(dipper_core PUBLIC _WIN32_WINNT=0x0A00)
+endif()
+
+# Later in Phase 2: unofficial::sqlite3::sqlite3 (#25).
